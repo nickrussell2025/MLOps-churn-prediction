@@ -1,0 +1,69 @@
+name: Deploy
+on:
+ push:
+   branches: [main]
+   paths:
+   - 'src/**'
+   - 'Dockerfile.model-api'
+   - 'Dockerfile.training'
+   - 'requirements.txt'
+
+jobs:
+ deploy:
+   runs-on: ubuntu-latest
+   steps:
+   - uses: actions/checkout@v4
+
+   - name: Auth to GCP
+     uses: google-github-actions/auth@v2
+     with:
+       credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+   - name: Setup Terraform
+     uses: hashicorp/setup-terraform@v3
+     with:
+       terraform_version: "1.5.0"
+
+   - name: Get Terraform Outputs
+     run: |
+       cd terraform/infrastructure
+       terraform init
+       echo "GCP_REGION=$(terraform output -raw region)" >> $GITHUB_ENV
+       echo "SERVICE_ACCOUNT_EMAIL=$(terraform output -raw service_account_email)" >> $GITHUB_ENV
+
+       cd ../model-api
+       terraform init
+       echo "MODEL_API_URL=$(terraform output -raw model_api_url)" >> $GITHUB_ENV
+
+   - name: Configure Docker
+     run: gcloud auth configure-docker ${{ env.GCP_REGION }}-docker.pkg.dev
+
+   - name: Build and Push Model API
+     run: |
+       TIMESTAMP=$(date +%s)
+       docker build -f Dockerfile.model-api --no-cache \
+         -t ${{ env.GCP_REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/mlops-repo/model-api:${TIMESTAMP} \
+         -t ${{ env.GCP_REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/mlops-repo/model-api:${{ github.sha }} .
+       docker push ${{ env.GCP_REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/mlops-repo/model-api:${TIMESTAMP}
+       docker push ${{ env.GCP_REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/mlops-repo/model-api:${{ github.sha }}
+       echo "TIMESTAMP=${TIMESTAMP}" >> $GITHUB_ENV
+
+   - name: Build and Push Training Pipeline
+     run: |
+       docker build -f Dockerfile.training --no-cache \
+         -t ${{ env.GCP_REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/mlops-repo/training-pipeline:latest \
+         -t ${{ env.GCP_REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/mlops-repo/training-pipeline:${{ github.sha }} .
+       docker push ${{ env.GCP_REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/mlops-repo/training-pipeline:latest
+       docker push ${{ env.GCP_REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/mlops-repo/training-pipeline:${{ github.sha }}
+
+   - name: Deploy to Cloud Run
+     run: |
+       gcloud run deploy model-api \
+         --image=${{ env.GCP_REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/mlops-repo/model-api:${{ env.TIMESTAMP }} \
+         --region=${{ env.GCP_REGION }} \
+         --service-account=${{ env.SERVICE_ACCOUNT_EMAIL }}
+
+   - name: Health Check
+     run: |
+       sleep 30
+       curl -f ${{ env.MODEL_API_URL }}/ || exit 1

@@ -1,0 +1,40 @@
+# Welcome to your prefect.yaml file! You can use this file for storing and managing
+# configuration for deploying your flows. We recommend committing this file to source
+# control along with your flow code.
+
+# Generic metadata about this project
+name: mlops-project
+prefect-version: 3.4.7
+
+# build section allows you to manage and build docker images
+build: null
+
+# push section allows you to manage if and how this project is uploaded to remote locations
+push: null
+
+# pull section allows you to provide instructions for cloning this project in remote locations
+pull:
+- prefect.deployments.steps.git_clone:
+    repository: "{{ $GITHUB_REPO_URL }}"
+    branch: main
+
+# the deployments section allows you to provide configuration for deploying flows
+deployments:
+- name: churn-pipeline-cloud-run
+  version: null
+  tags: []
+  concurrency_limit: null
+  description: Churn prediction pipeline.
+  entrypoint: src/mlops_churn/churn_pipeline.py:churn_prediction_pipeline
+  parameters: {}
+  work_pool:
+    name: "{{ $WORK_POOL_NAME }}"
+    work_queue_name: null
+    job_variables:
+      cpu: "4"
+      memory: "{{ $TRAINING_JOB_MEMORY }}"
+      task_timeout: 3600
+      env:
+        MLFLOW_TRACKING_URI: "{{ $MLFLOW_TRACKING_URI }}"
+        DATABASE_URL: "{{ $DATABASE_URL }}"
+  schedules: []

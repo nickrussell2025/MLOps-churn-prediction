@@ -1,0 +1,9 @@
+flask==3.1.1
+mlflow==3.1.1
+pandas==2.2.2
+scikit-learn==1.5.2
+pydantic==2.8.2
+psycopg2-binary==2.9.10
+gunicorn==23.0.0
+google-cloud-storage==2.10.0
+python-dotenv

@@ -1,0 +1,122 @@
+.env*
+# Service account keys
+service-account-key.json
+*service-account*.json
+*.json
+
+# GCP credentials
+gcp-credentials.json
+google-credentials.json
+
+# Any other credential files
+*-key.json
+*-credentials.json
+
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.Python
+build/
+dist/
+*.egg-info/
+*.egg
+
+# Virtual environments
+.venv/
+venv/
+ENV/
+
+# UV
+.python-version
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+
+# MLflow
+mlruns/
+mlartifacts/
+
+# Model artifacts
+models/*.pkl
+models/*.joblib
+
+# Data files
+data/processed/*.parquet
+data/reference/*.parquet
+/data/monitoring/
+
+# Logs
+logs/*.log
+logs/*.jsonl
+*.log
+
+# Database
+*.db
+*.sqlite
+
+# Environment variables
+.env
+.env.local
+
+# OS
+.DS_Store
+Thumbs.db
+
+tests/monitoring.py
+
+/notebooks
+
+*ipynb
+
+# Terraform
+**/.terraform/
+**/terraform.tfstate
+**/terraform.tfstate.*
+**/terraform.tfstate.backup
+**/*.tfvars
+**/*.tfvars.json
+**/terraform.tfplan
+**/*.plan
+**/.terraform.lock.hcl
+
+# Override files
+**/override.tf
+**/override.tf.json
+**/*_override.tf
+**/*_override.tf.json
+
+# SSH keys
+*.pem
+*.key
+id_rsa*
+.ssh/.
+
+# Runtime generated data
+/monitoring/
+
+# Environment files
+.env.cloud
+
+
+test_data.py
+
+prefect_flows/
+deployment_test/
+
+test-endpoints.ps1
+
+update-environment.ps1
+
+run-local.ps1
+Makefile.template
+MakefileRetryN
+env.template

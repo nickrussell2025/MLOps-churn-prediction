@@ -1,0 +1,43 @@
+volumes:
+  postgres_data: {}
+  grafana_data: {}
+
+services:
+  db:
+    image: postgres:13
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: example
+      POSTGRES_DB: monitoring
+      POSTGRES_USER: postgres
+      POSTGRES_INITDB_ARGS: "--auth-host=md5 --auth-local=md5"
+      TZ: Europe/London
+      PGTZ: Europe/London
+    command: postgres -c timezone=Europe/London
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - "8081:8080"
+    depends_on:
+      - db
+
+  grafana:
+    image: grafana/grafana-enterprise
+    user: "472"
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./config/grafana_datasources.yml:/etc/grafana/provisioning/datasources/datasource.yml:ro
+      - ./config/grafana_dashboards.yml:/etc/grafana/provisioning/dashboards/dashboard.yml:ro
+      - ./config/dashboards:/var/lib/grafana/dashboards:ro
+      - grafana_data:/var/lib/grafana
+    depends_on:
+      - db
+    restart: always

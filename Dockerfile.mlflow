@@ -1,0 +1,20 @@
+﻿FROM python:3.11-slim
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    libpq-dev \
+    gcc \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Python dependencies
+RUN pip install --no-cache-dir \
+    mlflow==3.1.1 \
+    psycopg2-binary==2.9.9 \
+    google-cloud-storage==2.10.0
+
+# Start MLflow server directly (not gunicorn)
+CMD mlflow server \
+    --host 0.0.0.0 \
+    --port $PORT \
+    --backend-store-uri "$MLFLOW_BACKEND_STORE_URI" \
+    --default-artifact-root "$MLFLOW_DEFAULT_ARTIFACT_ROOT"

@@ -1,0 +1,6 @@
+FROM prefecthq/prefect:3-latest
+WORKDIR /opt/prefect
+COPY pyproject.toml ./
+RUN pip install uv && uv pip install --system -e .
+COPY . .
+ENV PYTHONPATH=/opt/prefect

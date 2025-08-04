@@ -1,0 +1,27 @@
+name: Test
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up UV
+      uses: astral-sh/setup-uv@v3
+
+    - name: Install dependencies
+      run: uv sync --all-extras
+
+    - name: Check code quality
+      run: uv run ruff check src
+
+    - name: Test imports work
+      run: uv run python -c "from src.mlops_churn.app import create_app; print('✅ App imports successfully')"
+
+    - name: Test container builds
+      run: docker build -f Dockerfile.model-api -t test-image .
