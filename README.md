@@ -58,6 +58,7 @@ Uses the Bank Customer Churn Modeling dataset from Kaggle (https://www.kaggle.co
 - Drift detection using Evidently framework - MANUAL ONLY
 
 **Reproducibility**
+- Local reproducibility but hardcoded values remain in the system - SEE KNOWN ISSUES BELOW 
 - Complete Terraform automation with 5 infrastructure modules
 - All dependencies managed by UV with locked versions
 
@@ -69,6 +70,21 @@ Uses the Bank Customer Churn Modeling dataset from Kaggle (https://www.kaggle.co
 - Health monitoring scripts for system validation
 
 ## Known Issues
+
+### Hardcoded Configuration Values
+This implementation contains several hardcoded values that would need to be parameterized for production deployment:
+
+- **Prefect Server URL**: Hardcoded in `Dockerfile.prefect-server`
+- **GCP Project ID**: Hardcoded throughout Terraform configurations  
+- **Container Registry**: Hardcoded to specific project in Makefiles
+- **GitHub Repository URLs**: Hardcoded in `prefect.yaml` and environment templates
+
+### Production Recommendations
+For production deployment, these should be:
+- Parameterized using Terraform variables
+- Configured via environment-specific config files
+- Managed through CI/CD pipeline variables
+- Set via Kubernetes ConfigMaps/Secrets (if using GKE)
 
 **Terraform URL Output Mismatch:**
 - Cloud Run services work correctly but terraform outputs show outdated URL formats
