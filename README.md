@@ -6,7 +6,7 @@ Customer churn is a critical business challenge for banks, where identifying cus
 
 ## Data
 
-Uses the Bank Customer Churn Modeling dataset from Kaggle (https://www.kaggle.com/datasets/shrutimechlearn/churn-modelling) with customer features: credit score, geography, gender, age, tenure, balance, products, activity status, and estimated salary.
+Uses the [Bank Customer Churn Modeling dataset from Kaggle](https://www.kaggle.com/datasets/shrutimechlearn/churn-modelling) with customer features: credit score, geography, gender, age, tenure, balance, products, activity status, and estimated salary.
 
 ## Architecture
 
