@@ -11,7 +11,6 @@ Uses the Bank Customer Churn Modeling dataset from Kaggle (https://www.kaggle.co
 ## Architecture
 
 **Development Environment:**
-- Linux VM (mlops-dev-vm) with cross-platform development tools
 - PostgreSQL database (Docker) for local testing
 - MLflow tracking server (local SQLite) for experimentation
 - Prefect orchestration server (local) for pipeline development
