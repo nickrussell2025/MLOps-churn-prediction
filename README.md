@@ -248,7 +248,7 @@ make test-system
 make deploy-training
 
 # Start Prefect worker (keep running)
-make start-worker &
+make start-worker
 
 # Execute training pipeline
 make run-training
