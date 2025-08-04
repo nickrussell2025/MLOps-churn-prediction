@@ -349,11 +349,6 @@ gcloud config set account $(gcloud config get-value core/account | grep compute@
 gcloud config set project your-gcp-project-id
 ```
 
-**Why this works:**
-- Compute service account automatically has Editor permissions
-- No manual IAM setup required
-- Consistent across all GCP projects
-
 **For teardown operations:** Compute service account has sufficient permissions for all infrastructure operations including service deletion and IAM policy management.
 
 ## Monitoring and Observability
@@ -369,29 +364,6 @@ make test-system
 - Drift detection results in monitoring.drift_reports table
 - MLflow experiments in mlflow database
 - Prefect metadata in prefect database
-
-## Project Structure
-
-```
-mlops-project/
-├── src/mlops_churn/           # Application code
-│   ├── churn_pipeline.py      # Training pipeline
-│   ├── app.py                 # Flask API
-│   ├── database.py            # Database utilities
-│   └── models/                # Model artifacts
-├── terraform/                 # Infrastructure as Code
-│   ├── infrastructure/        # Core resources
-│   ├── services/              # MLflow deployment
-│   ├── model-api/             # API deployment
-│   ├── prefect-server/        # Orchestration deployment
-│   └── monitoring/            # Grafana deployment
-├── .github/workflows/         # CI/CD pipelines
-├── tests/                     # Test suite
-├── data/raw/                  # Training data
-├── docker-compose.yml         # Local services
-├── Makefile                   # Cross-platform automation
-└── README.md                  # This file
-```
 
 ## Reproducibility Notes
 
